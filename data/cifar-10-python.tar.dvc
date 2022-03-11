@@ -1,0 +1,4 @@
+outs:
+- md5: 183b453c123dc4afd53c55c2dccd17c9
+  size: 186224640
+  path: cifar-10-python.tar
