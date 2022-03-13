@@ -70,6 +70,9 @@ def train():
 
     arguments = parser.parse_args()
 
+    if not os.path.exists(arguments.model_dir):
+        os.makedirs(arguments.model_dir)
+
     data = read_data_from_disk(arguments.data_dir)
     if arguments.k_fold == 0:
         train_dataset, valid_dataset = create_dataset(data, arguments.train_test_split)
@@ -144,9 +147,6 @@ def train():
 
             loss_valid_epoch = validation(model, valid_dataloader, device)
             logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))
-        
-        if os.path.exists(arguments.model_dir):
-            os.makedirs(arguments.model_dir)
 
         model_path = os.path.join(arguments.model_dir, "checkpoint_epoch_{}".format(epoch))
         torch.save(model, model_path)
