@@ -39,7 +39,7 @@ def validation(model, valid_dataloader, device):
     model.eval()
     total_loss = 0.0
     for i, batch in enumerate(valid_dataloader):
-        image, _ = batch
+        image = batch
         image = image.to(device)
         output = model(image)
 
