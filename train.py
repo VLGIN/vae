@@ -125,7 +125,7 @@ def train():
                     if i % 10 == 0 or i == len(train_dataloader) - 1:
                         logger.info("Batch {}/{}: loss {}({})".format(i+1, len(train_dataloader), loss.item(), total_loss / (i+1)))
                 
-                loss_valid = validation(model, valid_dataloader)
+                loss_valid = validation(model, valid_dataloader, device)
                 loss_valid_epoch += loss_valid
                 logger.info("Fold {}: loss {}".format(fold, loss_valid))
             loss_valid_epoch = loss_valid_epoch / arguments.k_fold
@@ -142,7 +142,7 @@ def train():
                 loss.backward()
                 optimizer.step()
 
-            loss_valid_epoch = validation(model, valid_dataloader)
+            loss_valid_epoch = validation(model, valid_dataloader, device)
             logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))
         
         if os.path.exists(arguments.model_dir):
