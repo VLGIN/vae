@@ -153,7 +153,7 @@ def train():
         model_path = os.path.join(arguments.model_dir, "checkpoint_epoch_{}".format(epoch))
         torch.save(model, model_path)
 
-        if loss_valid_epoch < current_best_loss:
+        if loss_valid_epoch > current_best_loss:
             current_best_loss = loss_valid_epoch
             number_from_improvement = 0
         else:
