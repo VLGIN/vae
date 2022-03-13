@@ -5,9 +5,10 @@ import argparse
 import os
 import sys
 
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from sklearn.model_selection import KFold
 from src.model.vae import *
+from src.data.data import *
 from loguru import logger
 
 def create_dataset(data, train_test_splits):
@@ -15,7 +16,7 @@ def create_dataset(data, train_test_splits):
     ids = list(range(data.shape[0]))
     train_ids = np.random.choice(ids, size=len(ids)*(1-train_test_splits), replace=False)
     valid_ids = [item for item in ids if item not in train_ids]
-    return Dataset(data[train_ids]), Dataset(data[valid_ids])
+    return Vae_Dataset(torch.tensor(data[train_ids], dtype=torch.float)), Vae_Dataset(torch.tensor(data[valid_ids], dtype=torch.float))
     
 
 def create_dataloader(train_dataset, valid_dataset, arguments):
@@ -30,7 +31,7 @@ def read_data_from_disk(path):
     for file in files:
         file_path = os.path.join(path, file)
         with open(file_path, "rb") as f:
-            data.append(pickle.load(f, encoding="bytes")[b'data'])
+            data.append(pickle.load(f, encoding="bytes")[b'data'].astype(float))
     
     return np.concatenate(data, axis=0)
 
@@ -74,12 +75,12 @@ def train():
         train_dataset, valid_dataset = create_dataset(data, arguments.train_test_split)
         train_dataloader, valid_dataloader = create_dataloader(train_dataset, valid_dataset, arguments)
     else:
-        dataset = Dataset(data)
+        dataset = Vae_Dataset(torch.tensor(data, dtype=torch.float))
         kfold = KFold(arguments.k_fold)
 
     image_shape = data.shape[1:]
     model = VAE(image_shape, arguments.hidden_dim)
-    optimizer = torch.optim.SGD(model.parameters(), lr=arguments.lr)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
@@ -90,7 +91,7 @@ def train():
 
         logger.info("Training epoch {}".format(epoch))
         loss_valid_epoch = 0.0
-        if arguments.kfold != 0:
+        if arguments.k_fold != 0:
             logger.info("Training with k-fold cross validation style, numbef of folds: {}".format(arguments.k_fold))
             for fold, (train_ids, valid_ids) in enumerate(kfold.split(dataset)):
                 logger.info("Fold: {}".format(fold))
@@ -110,7 +111,7 @@ def train():
                 
                 total_loss = 0.0
                 for i, batch in enumerate(train_dataloader):
-                    image, _ = batch
+                    image = batch
                     image = image.to(device)
 
                     optimizer.zero_grad()
@@ -131,7 +132,7 @@ def train():
             logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))            
         else:
             for i, batch in enumerate(train_dataloader):
-                image, _ = batch
+                image = batch
                 image = image.to(device)
                 
                 optimizer.zero_grad()

@@ -1,5 +1,5 @@
-numpy==1.22.3
-torch==1.11.0
+numpy
+torch
 typing_extensions==4.1.1
 dvc[gdrive]==2.9.5
 loguru==0.6.0
