@@ -125,7 +125,7 @@ def train():
                     optimizer.step()
                     total_loss += loss.item()
                     
-                    if i % 10 == 0 or i == len(train_dataloader) - 1:
+                    if i % 50 == 0 or i == len(train_dataloader) - 1:
                         logger.info("Batch {}/{}: loss {}({})".format(i+1, len(train_dataloader), loss.item(), total_loss / (i+1)))
                 
                 loss_valid = validation(model, valid_dataloader, device)
@@ -144,6 +144,8 @@ def train():
                 out_image = output["output"]
                 loss.backward()
                 optimizer.step()
+                if i % 50 == 0 or i == len(train_dataloader) - 1:
+                    logger.info("Batch {}/{}: loss {}({})".format(i+1, len(train_dataloader), loss.item(), total_loss / (i+1)))
 
             loss_valid_epoch = validation(model, valid_dataloader, device)
             logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))
