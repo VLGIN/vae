@@ -30,7 +30,7 @@ class VAE(nn.Module):
         """
         Calculate loss for VAE
         """
-        kld = torch.mean(0.5*torch.sum(1 + sigma - mu**2 - torch.exp(sigma), dim=1), dim=0)
+        kld = torch.log(torch.mean(0.5*torch.sum(1 + sigma - mu**2 - torch.exp(sigma), dim=1), dim=0))
 
         loss = kld + torch.nn.functional.mse_loss(output, x)
         return loss
