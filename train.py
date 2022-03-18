@@ -153,12 +153,12 @@ def train():
         model_path = os.path.join(arguments.model_dir, "checkpoint_epoch_{}".format(epoch))
         torch.save(model, model_path)
 
-        if loss_valid_epoch > current_best_loss:
+        if loss_valid_epoch < current_best_loss:
             current_best_loss = loss_valid_epoch
             number_from_improvement = 0
         else:
             number_from_improvement += 1
-
+        print(f"Epoch {epoch}, loss {loss_valid_epoch}, number from improvement {number_from_improvement}")
         if number_from_improvement >= 8:
             logger.info("TRAING END DUE TO POOR IMPROVEMENT ON VALIDATION DATA.")
             logger.info("BEST EPOCH {}".format(epoch - number_from_improvement))

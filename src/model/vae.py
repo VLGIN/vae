@@ -23,7 +23,7 @@ class VAE(nn.Module):
         Sample z by reparameterization trick
         """
         # temp = torch.exp(0.5 * sigma)
-        std = torch.exp(0,5 * log_var)
+        std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
         return mu + eps * std
 
