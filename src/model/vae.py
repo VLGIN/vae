@@ -18,19 +18,20 @@ class VAE(nn.Module):
         loss = self.loss(mu, sigma, x, output)
         return {"loss": loss, "output": output}
 
-    def reparameterize(self, mu, sigma):
+    def reparameterize(self, mu, log_var):
         """
         Sample z by reparameterization trick
         """
         # temp = torch.exp(0.5 * sigma)
-        eps = torch.randn_like(sigma)
-        return mu + eps * sigma       
+        std = torch.exp(0,5 * log_var)
+        eps = torch.randn_like(std)
+        return mu + eps * std
 
-    def loss(self, mu, sigma, x, output):
+    def loss(self, mu, log_var, x, output):
         """
         Calculate loss for VAE
         """
-        kld = torch.log(torch.mean(0.5*torch.sum(1 + sigma - mu**2 - torch.exp(sigma), dim=1), dim=0))
+        kld = torch.mean(-0.5*torch.sum(1 + log_var - mu**2 - torch.exp(log_var), dim=1), dim=0)
 
         loss = kld + torch.nn.functional.mse_loss(output, x)
         return loss
@@ -53,7 +54,7 @@ class Encoder(nn.Module):
             nn.Linear(128, output_dim)
         )
 
-        self.sigma = nn.Sequential(
+        self.std = nn.Sequential(
             nn.Linear(image_dim, 512),
             nn.ReLU(),
             nn.Linear(512, 256),
@@ -66,8 +67,8 @@ class Encoder(nn.Module):
     def forward(self, x):
         x = self.flatten(x)
         mu = self.mu(x)
-        sigma = self.sigma(x)
-        return (mu, sigma)
+        log_var = self.std(x)
+        return (mu, log_var)
 
 class Decoder(nn.Module):
     def __init__(self, input_dim, image_dim):
