@@ -57,7 +57,9 @@ def train():
                         help="Numbef of folds to train with k-fold cross validation style, if k_fold=0, training with normal style.")
     parser.add_argument("--epoch", type=int, default=100,
                         help="Max epoch number.")
-    parser.add_argument("--hidden_dim", type=int, default=128,
+    parser.add_argument("--num_cnn", type=int, default=3,
+                        help="Numbef of CNN layer.")
+    parser.add_argument("--latent_dim", type=int, default=128,
                         help="Dim of z.")
     parser.add_argument("--lr", type=float, default=1e-3,
                         help="Learning rate.")
@@ -74,6 +76,7 @@ def train():
         os.makedirs(arguments.model_dir)
 
     data = read_data_from_disk(arguments.data_dir)
+    data = data.reshape((-1, 3, 32, 32))
     if arguments.k_fold == 0:
         train_dataset, valid_dataset = create_dataset(data, arguments.train_test_split)
         train_dataloader, valid_dataloader = create_dataloader(train_dataset, valid_dataset, arguments)
@@ -82,7 +85,7 @@ def train():
         kfold = KFold(arguments.k_fold)
 
     image_shape = data.shape[1:]
-    model = VAE(image_shape, arguments.hidden_dim)
+    model = VAE(image_shape, arguments.num_cnn, arguments.latent_dim)
     optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -170,6 +173,6 @@ def train():
 
 if __name__ == "__main__":
     logger.remove()
-    # logger.add(sys.stderr, level="INFO")
+    logger.add(sys.stderr, level="INFO")
     logger.add("training.log", level="INFO")
     train()
