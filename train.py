@@ -173,6 +173,6 @@ def train():
 
 if __name__ == "__main__":
     logger.remove()
-    logger.add(sys.stderr, level="INFO")
+    #logger.add(sys.stderr, level="INFO")
     logger.add("training.log", level="INFO")
     train()
