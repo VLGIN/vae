@@ -68,7 +68,7 @@ def train():
                         help="Use when training in normal style.")
     parser.add_argument("--batch_size", type=int, default=16,
                         help="Batch size for creating dataloader.")
-    parser.add_argument("--train_from_checkpoint", type=argparse.BooleanOptionalAction,
+    parser.add_argument("--train_from_checkpoint", action="store_true",
                         help="Continue training from checkpoint")
 
     arguments = parser.parse_args()
