@@ -9,7 +9,9 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import KFold
 from src.model.vae import *
 from src.data.data import *
+from decouple import config
 from loguru import logger
+from utils import *
 
 def create_dataset(data, train_test_splits):
     data = np.array(data)
@@ -67,13 +69,13 @@ def train():
                         help="Use when training in normal style.")
     parser.add_argument("--batch_size", type=int, default=16,
                         help="Batch size for creating dataloader.")
-    parser.add_argument("--model_dir", type=str, default="model",
-                        help="Path to save model checkpoint.")
+    parser.add_argument("--train_from_checkpoint", type=argparse.BooleanOptionalAction,
+                        help="Continue training from checkpoint")
 
     arguments = parser.parse_args()
 
-    if not os.path.exists(arguments.model_dir):
-        os.makedirs(arguments.model_dir)
+    if not os.path.exists(config('MODEL_DIR')):
+        os.makedirs(config('MODEL_DIR'))
 
     data = read_data_from_disk(arguments.data_dir)
     data = data.reshape((-1, 3, 32, 32))
@@ -84,15 +86,27 @@ def train():
         dataset = Vae_Dataset(torch.tensor(data, dtype=torch.float))
         kfold = KFold(arguments.k_fold)
 
+
+    if arguments.train_from_checkpoint:
+        hyper_param = process_log()
+        current_best_loss = hyper_param["current_best_loss"]
+        number_from_improvement = hyper_param["number_from_improvement"]
+        current_epoch = hyper_param["current_epoch"]
+        
+        model = torch.load(os.path.join(config('MODEL_DIR'), 'checkpoint_epoch_{}'.format(current_epoch)))
+        
+    else:
+        current_best_loss = float('inf')
+        number_from_improvement = 0
+        current_epoch = 0
+
+        model = VAE(image_shape, arguments.num_cnn, arguments.latent_dim)
+
     image_shape = data.shape[1:]
-    model = VAE(image_shape, arguments.num_cnn, arguments.latent_dim)
     optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-
-    current_best_loss = float('inf')
-    number_from_improvement = 0
-    for epoch in range(arguments.epoch):
+    for epoch in range(current_epoch, arguments.epoch):
         model.train()
 
         logger.info("Training epoch {}".format(epoch))
@@ -153,7 +167,7 @@ def train():
             loss_valid_epoch = validation(model, valid_dataloader, device)
             logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))
 
-        model_path = os.path.join(arguments.model_dir, "checkpoint_epoch_{}".format(epoch))
+        model_path = os.path.join(config('MODEL_DIR'), "checkpoint_epoch_{}".format(epoch))
         torch.save(model, model_path)
 
         if loss_valid_epoch < current_best_loss:
