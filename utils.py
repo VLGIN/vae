@@ -20,6 +20,9 @@ def process_log():
 
     best_loss = min(evaluation)
     best_epoch = evaluation.index(best_loss)
+    with open(log_file, "w") as f:
+        for item in logs:
+            f.write(item + "\n")
 
     return {"current_best_loss": best_loss, "number_from_improvement": last_epoch - best_epoch, "current_epoch": last_epoch}
     

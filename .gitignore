@@ -2,3 +2,4 @@ venv/
 training.log
 cifar-10/
 /model
+.DS_Store

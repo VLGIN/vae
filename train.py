@@ -19,7 +19,6 @@ def create_dataset(data, train_test_splits):
     train_ids = np.random.choice(ids, size=len(ids)*(1-train_test_splits), replace=False)
     valid_ids = [item for item in ids if item not in train_ids]
     return Vae_Dataset(torch.tensor(data[train_ids], dtype=torch.float)), Vae_Dataset(torch.tensor(data[valid_ids], dtype=torch.float))
-    
 
 def create_dataloader(train_dataset, valid_dataset, arguments):
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=arguments.batch_size)
@@ -88,13 +87,13 @@ def train():
 
 
     if arguments.train_from_checkpoint:
+        logger.info("Load model from checkpoint.")
         hyper_param = process_log()
         current_best_loss = hyper_param["current_best_loss"]
         number_from_improvement = hyper_param["number_from_improvement"]
         current_epoch = hyper_param["current_epoch"]
         
         model = torch.load(os.path.join(config('MODEL_DIR'), 'checkpoint_epoch_{}'.format(current_epoch)))
-        
     else:
         current_best_loss = float('inf')
         number_from_improvement = 0
