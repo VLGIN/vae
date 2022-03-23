@@ -7,7 +7,7 @@ def process_log():
 
     with open(log_file) as f:
         logs = f.read().splitlines()
-    last_epoch = 0
+    last_epoch = -1
     last_logs = 0
     evaluation = []
     for i in range(len(logs)):

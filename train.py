@@ -105,7 +105,7 @@ def train():
     optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    for epoch in range(current_epoch, arguments.epoch):
+    for epoch in range(current_epoch+1, arguments.epoch):
         model.train()
 
         logger.info("Training epoch {}".format(epoch))
