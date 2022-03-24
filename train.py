@@ -74,7 +74,7 @@ def train():
         dataset = Vae_Dataset(torch.tensor(data, dtype=torch.float))
         kfold = KFold(arguments.k_fold)
 
-
+    image_shape = data.shape[1:]
     if arguments.train_from_checkpoint:
         logger.info("Load model from checkpoint.")
         hyper_param = process_log()
@@ -90,7 +90,7 @@ def train():
 
         model = VAE(image_shape, arguments.num_cnn, arguments.latent_dim)
 
-    image_shape = data.shape[1:]
+    
     optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
