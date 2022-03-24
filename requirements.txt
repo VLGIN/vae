@@ -5,3 +5,4 @@ dvc[gdrive]==2.9.5
 loguru==0.6.0
 scikit-learn==1.0.2
 python-decouple==3.6
+matplotlib

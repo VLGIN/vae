@@ -25,17 +25,6 @@ def create_dataloader(train_dataset, valid_dataset, arguments):
     valid_dataloader = DataLoader(valid_dataset, shuffle=False, batch_size=arguments.batch_size)
     return train_dataloader, valid_dataloader
 
-def read_data_from_disk(path):
-    files = os.listdir(path)
-    data = []
-
-    for file in files:
-        file_path = os.path.join(path, file)
-        with open(file_path, "rb") as f:
-            data.append(pickle.load(f, encoding="bytes")[b'data'].astype(float))
-    
-    return np.concatenate(data, axis=0)
-
 def validation(model, valid_dataloader, device):
     model.eval()
     total_loss = 0.0
