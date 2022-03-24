@@ -97,6 +97,7 @@ def train():
     for epoch in range(current_epoch+1, arguments.epoch):
         model.train()
 
+        print(f"Training epoch {epoch}")
         logger.info("Training epoch {}".format(epoch))
         loss_valid_epoch = 0.0
         if arguments.k_fold != 0:
