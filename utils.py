@@ -1,10 +1,12 @@
 import re
 import os
 import pickle
+from turtle import shape
 import numpy as np
 
 from decouple import config
 from matplotlib import pyplot as plt
+from PIL import Image
 
 def process_log():
     log_file = config('LOG_FILE')
@@ -41,15 +43,19 @@ def read_data_from_disk(path):
     
     return np.concatenate(data, axis=0)
     
-def visualize_image(data):
+def visualize_image(data, path):
     num_img = data.shape[0]
-
     fig = plt.figure(figsize=(20,20))
     rows = 4
     columns = 4
     for i in range(num_img):
         fig.add_subplot(rows, columns, i+1)
-        plt.imshow(data[i])
+        img = data[i]
+        real_img = np.zeros((32,32,3))
+        for i in range(32):
+            for j in range(32):
+                real_img[i, j] = np.rint(img[:, i, j])
+        plt.imshow(real_img.astype(int))
         plt.axis("off")
-    fig.savefig("infer.png")
+    fig.savefig(path)
     

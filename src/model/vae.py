@@ -56,6 +56,7 @@ class Encoder(nn.Module):
             module.append(
                 nn.Sequential(
                     nn.Conv2d(input_dim, hidden, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(hidden),
                     nn.LeakyReLU()
                 )
             )
@@ -120,6 +121,7 @@ class Decoder(nn.Module):
         for i in range(len(hidden_dim)-1):
             module.append(nn.Sequential(
                 nn.ConvTranspose2d(hidden_dim[i], hidden_dim[i+1], kernel_size=3, padding=1),
+                nn.BatchNorm2d(hidden_dim[i+1]),
                 nn.LeakyReLU()
             ))
 

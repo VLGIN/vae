@@ -26,19 +26,20 @@ def infer():
     num_img = np.arange(data.shape[0])
     sample_data = np.random.choice(num_img, arguments.num_sample)
     sample_data = data[sample_data]
+    visualize_image(sample_data, "sample.png")
 
+    image_shape = data.shape[1:]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     #Load model
     model_path = os.path.join(config('MODEL_DIR'), f'checkpoint_epoch_{arguments.checkpoint}')
     logger.info(model_path)
     try:
-        model = torch.load(model_path)
+        model = torch.load(model_path, map_location=device)
     except Exception as e:
         logger.error(e)
         logger.info("Invalid model checkpoint")
         return
     
-    image_shape = data.shape[1:]
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     model.eval()
 
@@ -47,7 +48,7 @@ def infer():
 
     out_image = output["output"].cpu().detach().numpy()
 
-    visualize_image(out_image)
+    visualize_image(out_image, "infer.png")
 
 
 if __name__ == "__main__":
