@@ -2,5 +2,6 @@ __pycache__/
 venv/
 training.log
 cifar-10/
+cifar-10-test/
 /model
 .DS_Store

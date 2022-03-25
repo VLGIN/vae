@@ -11,9 +11,9 @@ from utils import *
 
 def infer():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_dir", type=str, default="data/cifar-10",
+    parser.add_argument("--data_dir", type=str, default="cifar-10-test",
                         help="Path to data folder, which may contains one or several files of data.")
-    parser.add_argument("--num_sample", type=int, default=32,
+    parser.add_argument("--num_sample", type=int, default=16,
                         help="Number of sample to infer.")
     parser.add_argument("--checkpoint", type=int, default=0,
                         help="Checkpoint for infering.")
@@ -39,16 +39,22 @@ def infer():
         logger.error(e)
         logger.info("Invalid model checkpoint")
         return
-    
+
     model.to(device)
     model.eval()
 
-    input = torch.tensor(sample_data, dtype=torch.float32, device=device)
-    output = model(input)
+    outputs = []
+    for each in sample_data:
+        input = torch.tensor(each, dtype=torch.float32, device=device).unsqueeze(0)
+        output = model(input)["output"].cpu().detach().numpy()
+        outputs.append(output[0])
 
-    out_image = output["output"].cpu().detach().numpy()
+#input = torch.tensor(sample_data, dtype=torch.float32, device=device)
+    #output = model(input)
 
-    visualize_image(out_image, "infer.png")
+    #out_image = output["output"].cpu().detach().numpy()
+
+    visualize_image(np.array(outputs), "infer.png")
 
 
 if __name__ == "__main__":
