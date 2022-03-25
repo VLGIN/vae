@@ -80,8 +80,8 @@ def train():
         hyper_param = process_log()
         current_best_loss = hyper_param["current_best_loss"]
         number_from_improvement = hyper_param["number_from_improvement"]
-        current_epoch = hyper_param["current_epoch"]
-        
+        current_epoch = hyper_param["current_epoch"] + 1
+
         model = torch.load(os.path.join(config('MODEL_DIR'), 'checkpoint_epoch_{}'.format(current_epoch)))
     else:
         current_best_loss = float('inf')
@@ -90,7 +90,7 @@ def train():
 
         model = VAE(image_shape, arguments.num_cnn, arguments.latent_dim)
 
-    
+
     optimizer = torch.optim.AdamW(model.parameters(), lr=arguments.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -117,7 +117,7 @@ def train():
                     batch_size = arguments.batch_size,
                     sampler = valid_subsampler
                 )
-                
+
                 total_loss = 0.0
                 for i, batch in enumerate(train_dataloader):
                     image = batch
@@ -130,20 +130,20 @@ def train():
                     loss.backward()
                     optimizer.step()
                     total_loss += loss.item()
-                    
+
                     if i % 50 == 0 or i == len(train_dataloader) - 1:
                         logger.info("Batch {}/{}: loss {}({})".format(i+1, len(train_dataloader), loss.item(), total_loss / (i+1)))
-                
+
                 loss_valid = validation(model, valid_dataloader, device)
                 loss_valid_epoch += loss_valid
                 logger.info("Fold {}: loss {}".format(fold, loss_valid))
             loss_valid_epoch = loss_valid_epoch / arguments.k_fold
-            logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))            
+            logger.info("EPOCH {}: loss {}".format(epoch, loss_valid_epoch))
         else:
             for i, batch in enumerate(train_dataloader):
                 image = batch
                 image = image.to(device)
-                
+
                 optimizer.zero_grad()
                 output = model(image)
                 loss = output["loss"]
@@ -169,10 +169,10 @@ def train():
             logger.info("TRAING END DUE TO POOR IMPROVEMENT ON VALIDATION DATA.")
             logger.info("BEST EPOCH {}".format(epoch - number_from_improvement))
             break
-        
+
         if epoch == arguments.epoch - 1:
             logger.info("BEST EPOCH {}".format(epoch - number_from_improvement))
-    
+
 
 if __name__ == "__main__":
     logger.remove()
