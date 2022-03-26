@@ -1,6 +1,6 @@
 # Variational Auto Encoder Implemetation
 
-Reference: ...
+Reference: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
 
 ## How to train
 ```bash
