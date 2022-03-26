@@ -1,0 +1,4 @@
+outs:
+- md5: 82481fa9eac01487fa10d5ef8a34f738
+  size: 92657
+  path: training.log
