@@ -21,3 +21,6 @@ Use ```python3 infer.py --help``` for all options.
 python3 eval.py --data_dir path_to_data_folder --checkpoint which_checkpoint_to_be_used --batch_size bach_size
 ```
 Use ```python3 eval.py --help``` for all options.
+
+## Docs for detail training, infering and evaluation
+Incoming
