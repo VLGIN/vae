@@ -16,7 +16,7 @@ python3 infer.py --data_dir path_to_data_folder --num_img number_of_image_for_in
 ```
 Use ```python3 infer.py --help``` for all options.
 
-## How to evaluation (calculate FID)
+## How to evaluate (calculate FID)
 ```bash
 python3 eval.py --data_dir path_to_data_folder --checkpoint which_checkpoint_to_be_used --batch_size bach_size
 ```
