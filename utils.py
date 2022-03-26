@@ -7,6 +7,7 @@ import numpy as np
 from decouple import config
 from matplotlib import pyplot as plt
 from PIL import Image
+from scipy.linalg import sqrtm
 
 def process_log():
     log_file = config('LOG_FILE')
@@ -21,7 +22,7 @@ def process_log():
             evaluation.append(float(logs[i].split(" ")[-1]))
             last_epoch += 1
             last_logs = i
-    
+
     logs = logs[:last_logs + 1]
 
     best_loss = min(evaluation)
@@ -40,9 +41,23 @@ def read_data_from_disk(path):
         file_path = os.path.join(path, file)
         with open(file_path, "rb") as f:
             data.append(pickle.load(f, encoding="bytes")[b'data'].astype(float))
-    
+
     return np.concatenate(data, axis=0)
-    
+
+def calculate_fid(inputs, generate):
+    assert inputs.shape == generate.shape
+    mu1, sigma1 = inputs.mean(axis=0), np.cov(inputs, rowvar=False)
+    mu2, sigma2 = generate.mean(axis=0), np.cov(generate, rowvar=False)
+
+    ssdif = np.sum((mu1 - mu2)**2.0)
+
+    covmean = sqrtm(sigma1.dot(sigma2))
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
+
+    fid = ssdif + np.trace(sigma1 + sigma2 - 2.0*covmean)
+    return fid
+
 def visualize_image(data, path):
     num_img = data.shape[0]
     fig = plt.figure(figsize=(20,20))
@@ -58,4 +73,4 @@ def visualize_image(data, path):
         plt.imshow(real_img.astype(int))
         plt.axis("off")
     fig.savefig(path)
-    
+
