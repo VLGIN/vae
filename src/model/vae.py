@@ -21,7 +21,7 @@ class VAE(nn.Module):
     def reparameterize(self, mu, log_var):
         """
         Sample z by reparameterization trick
-        """
+      """
         # temp = torch.exp(0.5 * sigma)
         std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
@@ -100,7 +100,7 @@ class Decoder(nn.Module):
         self.latent_dim = latent_dim
         self.input_dim = image_size[0]
         self.output_size = tuple([-1] + list(image_size))
-        
+
         self.num_cnn = num_cnn
 
         hidden_dim = []
@@ -121,7 +121,7 @@ class Decoder(nn.Module):
         for i in range(len(hidden_dim)-1):
             module.append(nn.Sequential(
                 nn.ConvTranspose2d(hidden_dim[i], hidden_dim[i+1], kernel_size=3, padding=1),
-                nn.BatchNorm2d(hidden_dim[i+1]),
+                #nn.BatchNorm2d(hidden_dim[i+1]),
                 nn.LeakyReLU()
             ))
 
