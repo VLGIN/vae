@@ -2,6 +2,9 @@
 
 Reference: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
 
+## Example
+![Sample](https://github.com/ginlov/vae/blob/main/sample.png?raw=true)
+
 ## How to train
 ```bash
 python3 train.py --data_dir path_to_data_folder --epoch number_of_max_epoch --lr learning_rate
