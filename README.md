@@ -3,7 +3,10 @@
 Reference: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
 
 ## Example
-![Sample](https://github.com/ginlov/vae/blob/main/sample.png?raw=true)
+Samples            |  Infer images
+:-------------------------:|:-------------------------:
+![Samples](https://github.com/ginlov/vae/blob/main/sample.png?raw=true)  |  ![Infer images](https://github.com/ginlov/vae/blob/main/infer.png?raw=true)
+
 
 ## How to train
 ```bash
